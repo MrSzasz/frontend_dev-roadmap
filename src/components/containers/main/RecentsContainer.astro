@@ -1,0 +1,63 @@
+---
+import Card from "@/components/Main/Recents/Card.astro";
+import SectionLayout from "@/layouts/SectionLayout.astro";
+
+const recents = [
+  {
+    name: "Blog",
+    href: "/notes",
+    date: 1712266720170,
+    image: "https://picsum.photos/720/1280?random=1",
+    title: "Title 1",
+    description:
+      "Lorem ipsum dolor sit amet consectetur adipisicing elit. Quas, quidem! Lorem ipsum dolor sit amet consectetur adipisicing elit. Quas, quidem! Lorem ipsum dolor sit amet consectetur adipisicing elit. Quas, quidem!",
+    tags: ["tag 1", "tag 2", "tag 3"],
+  },
+  {
+    name: "Blog",
+    href: "/notes",
+    date: 1712266720170,
+    image: "https://picsum.photos/720/1280?random=2",
+    title: "Title 2",
+    description:
+      "Lorem ipsum dolor sit amet consectetur adipisicing elit. Quas, quidem!",
+    tags: ["tag 1", "tag 2", "tag 3"],
+  },
+  {
+    name: "Blog",
+    href: "/notes",
+    date: 1712266720170,
+    image: "https://picsum.photos/720/1280?random=3",
+    title: "Title 3",
+    description:
+      "Lorem ipsum dolor sit amet consectetur adipisicing elit. Quas, quidem!",
+    tags: ["tag 1", "tag 2", "tag 3"],
+  },
+  {
+    name: "Blog",
+    href: "/notes",
+    date: 1712266720170,
+    image: "https://picsum.photos/720/1280?random=4",
+    title: "Title 4",
+    description:
+      "Lorem ipsum dolor sit amet consectetur adipisicing elit. Quas, quidem!",
+    tags: ["tag 1", "tag 2", "tag 3"],
+  },
+];
+---
+
+<SectionLayout>
+  <div
+    class="grid grid-cols-[min-content_auto] md:grid-cols-2 gap-4 md:gap-0 p-4 h-fit md:h-full w-full my-10"
+    id="contact"
+  >
+    <div class="relative h-full">
+      <h2 class="text-6xl md:text-7xl sticky top-10 rotateText wk-h3">
+        RECENTS
+      </h2>
+    </div>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      {recents.map((recent) => <Card recent={recent} />)}
+    </div>
+  </div>
+</SectionLayout>

@@ -1,0 +1,13 @@
+---
+const titles = ["Note 1", "Note 2", "Note 3", "Note 4", "Note 5", "Note 6"];
+---
+
+<ul class="bg-secondary border border-accent-foreground p-4">
+  {
+    titles.map((title) => (
+      <li class="p-1 text-sm" data-interactive>
+        {title}
+      </li>
+    ))
+  }
+</ul>

@@ -1,0 +1,16 @@
+---
+import CategoriesContainer from "@/components/containers/main/CategoriesContainer.astro";
+import ContactContainer from "@/components/containers/main/ContactContainer.astro";
+import DescriptionContainer from "@/components/containers/main/DescriptionContainer.astro";
+import HeroContainer from "@/components/containers/main/MainHeroContainer.astro";
+import RecentsContainer from "@/components/containers/main/RecentsContainer.astro";
+import BaseLayout from "@/layouts/BaseLayout.astro";
+---
+
+<BaseLayout title="Home">
+  <HeroContainer />
+  <DescriptionContainer />
+  <RecentsContainer />
+  <CategoriesContainer />
+  <ContactContainer />
+</BaseLayout>

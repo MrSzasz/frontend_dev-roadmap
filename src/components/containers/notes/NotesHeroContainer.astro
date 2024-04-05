@@ -1,0 +1,22 @@
+---
+import { Badge } from "@/components/ui/badge";
+---
+
+<section class="w-full h-screen grid place-items-center">
+  <div
+    class="w-[90vw] h-[50vh] md:w-[80vw] md:h-[80vh] border-accent-foreground/50 border-opacity-25 border rounded-2xl bg-[url('https://loremflickr.com/1920/1080')] bg-cover bg-center bg-no-repeat relative overflow-hidden"
+    id="hero"
+  >
+    <div
+      class="flex gap-2 absolute bottom-0 left-0 p-4 h-fit w-full backdrop-blur-lg bg-black/50"
+    >
+      {
+        [...Array(5).keys()].map((key) => (
+          <Badge data-interactive variant="outline">
+            Badge {key}
+          </Badge>
+        ))
+      }
+    </div>
+  </div>
+</section>

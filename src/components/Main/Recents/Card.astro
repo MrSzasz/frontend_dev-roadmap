@@ -1,0 +1,30 @@
+---
+import { Badge } from "@/components/ui/badge";
+import { dateFormatter } from "@/lib/formatters";
+
+const { recent } = Astro.props;
+---
+
+<a href={recent.href} class="group/card transition-all" data-interactive>
+  <div class="relative">
+    <img
+      src={recent.image}
+      alt={recent.alt}
+      class="h-[200px] w-full object-cover grayscale group-hover/card:grayscale-0"
+    />
+    <span class="absolute -bottom-[1em] z-10 left-0 text-xs p-1 bg-accent"
+      >{dateFormatter(recent.date)}</span
+    >
+  </div>
+  <div class="relative py-6 border border-accent-foreground px-4">
+    <h3 class="truncate">{recent.title}</h3>
+    <p class="line-clamp-3">{recent.description}</p>
+    <div class="fkex gap-2">
+      {
+        recent.tags.map((item: string) => (
+          <Badge variant="outline">{item}</Badge>
+        ))
+      }
+    </div>
+  </div>
+</a>

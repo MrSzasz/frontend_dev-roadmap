@@ -1,0 +1,66 @@
+---
+import { LuCopy, LuSend } from "react-icons/lu";
+import { Button } from "./ui/button";
+// import { Toaster } from "react-hot-toast";
+
+export interface Props {
+  text: string;
+  copyText: string;
+  href: string;
+}
+
+const { text, copyText, href } = Astro.props;
+---
+
+<script>
+  //   import toast from "react-hot-toast";
+
+  const buttons: NodeListOf<HTMLElement> =
+    document.querySelectorAll("[data-copy]");
+
+  buttons.forEach((button) => {
+    button.addEventListener("click", () => {
+      if (button.dataset.copy !== undefined) {
+        navigator.clipboard.writeText(button.dataset.copy);
+        // toast("Successfully copied to clipboard");
+      }
+    });
+  });
+</script>
+
+<div
+  class="flex gap-2 md:gap-4 items-center pb-1 w-fit transition-all relative group"
+>
+  <div
+    class="flex gap-2 md:gap-4 items-center pb-1 border-b border-b-transparent"
+  >
+    <slot />
+    <span class="text-xs md:text-base">
+      {text}
+    </span>
+  </div>
+  <div
+    class="sticky md:left-[90%] md:opacity-0 md:group-hover:left-[110%] group-hover:opacity-100 flex gap-2 md:gap-4 transition-all"
+  >
+    {
+      copyText && (
+        <Button asChild>
+          <LuCopy data-copy={copyText} data-interactive />
+        </Button>
+      )
+    }
+    <Button client:load asChild>
+      <a
+        href={href}
+        target="_blank"
+        rel="noopener noreferrer"
+        class="cursor-none"
+        data-interactive
+        aria-label={`Go to ${href}`}
+      >
+        <LuSend /></a
+      >
+    </Button>
+  </div>
+  <!-- <Toaster position="bottom-right" client:load /> -->
+</div>

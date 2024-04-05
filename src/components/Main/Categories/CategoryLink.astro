@@ -1,0 +1,14 @@
+---
+import { LuArrowRight } from "react-icons/lu";
+
+const { href, name } = Astro.props;
+---
+
+<a
+  href={href}
+  class="w-full p-4 border-accent-foreground border flex items-center justify-between hover:bg-accent transition-colors"
+  data-interactive
+>
+  {name}
+  <LuArrowRight className="text-xl md:text-2xl" />
+</a>
