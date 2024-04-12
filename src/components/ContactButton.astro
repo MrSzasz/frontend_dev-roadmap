@@ -1,7 +1,6 @@
 ---
-import { LuCopy, LuSend } from "react-icons/lu";
+import { LuCheck, LuCopy, LuSend } from "react-icons/lu";
 import { Button } from "./ui/button";
-// import { Toaster } from "react-hot-toast";
 
 export interface Props {
   text: string;
@@ -13,7 +12,7 @@ const { text, copyText, href } = Astro.props;
 ---
 
 <script>
-  //   import toast from "react-hot-toast";
+  const check = document.querySelector("#check");
 
   const buttons: NodeListOf<HTMLElement> =
     document.querySelectorAll("[data-copy]");
@@ -22,7 +21,14 @@ const { text, copyText, href } = Astro.props;
     button.addEventListener("click", () => {
       if (button.dataset.copy !== undefined) {
         navigator.clipboard.writeText(button.dataset.copy);
-        // toast("Successfully copied to clipboard");
+        button.classList.add("invisible");
+        check?.classList.remove("invisible");
+        check?.classList.add("z-10");
+        setTimeout(() => {
+          button.classList.remove("invisible");
+          check?.classList.add("invisible");
+          check?.classList.remove("z-10");
+        }, 2000);
       }
     });
   });
@@ -46,6 +52,10 @@ const { text, copyText, href } = Astro.props;
       copyText && (
         <Button asChild>
           <LuCopy data-copy={copyText} data-interactive />
+          <LuCheck
+            id="check"
+            className="invisible -z-10 group-hover:opacity-100 absolute bg-background text-green-500"
+          />
         </Button>
       )
     }
@@ -62,5 +72,4 @@ const { text, copyText, href } = Astro.props;
       >
     </Button>
   </div>
-  <!-- <Toaster position="bottom-right" client:load /> -->
 </div>

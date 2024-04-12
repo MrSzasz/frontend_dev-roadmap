@@ -1,0 +1,74 @@
+---
+import SectionLayout from "@/layouts/componentLayouts/SectionLayout.astro";
+---
+
+<SectionLayout>
+  <div
+    class="grid grid-cols-[min-content_auto] md:grid-cols-2 gap-4 md:gap-0 p-4 h-fit md:h-full w-full my-10 pt-20"
+  >
+    <div class="relative h-full">
+      <h2 class="text-6xl md:text-7xl sticky top-10 rotateText wk-h3">
+        SOBRE MI
+      </h2>
+    </div>
+    <div class="flex flex-col gap-4">
+      <div class="flex flex-col gap-4 col-end-3">
+        <section class="flex gap-4 items-center">
+          <div>
+            <img
+              src="/about/profile.webp"
+              title="Profile picture"
+              alt="Profile picture"
+              class="w-36 h-36 md:float-left mr-5 mb-4 md:mb-2 border-4 border-accent-foreground mt-2"
+            />
+            <p class="text-balance mb-4">
+              ¡Hola! Mi nombre es <span class="important-span">Tomás</span>. soy
+              un desarrollador Full-Stack con enfoque en Front-End. Mi
+              fascinación por el desarrollo web comenzó cuando descubrí que se
+              podían editar páginas web utilizando las herramientas de
+              desarrollo, y ahora esta es <span class="important-span"
+                >mi pasión y profesión.</span
+              >
+            </p>
+
+            <p class="text-balance mb-4">
+              Durante mis estudios, ayudar a mis compañeros a resolver problemas
+              de código o explicar conceptos complejos, me enseñó <span
+                class="important-span"
+                >la importancia del trabajo en equipo en el mundo del desarrollo
+                web.</span
+              >
+            </p>
+
+            <p class="text-balance mb-4">
+              Con <span class="important-span"
+                >más de 2 años de experiencia en desarrollo</span
+              >, he aprendido a crear aplicaciones web con interfaces claras que
+              resalten el producto principal.
+            </p>
+
+            <p class="text-balance mb-4">
+              Como <span class="important-span">desarrollador Full Stack</span>,
+              mi stack principal se basa en NextJs para el Front-End y NodeJs
+              con Express para el Back-End, con MySql para bases de datos
+              relacionales y MongoDB para bases de datos no relacionales.
+            </p>
+
+            <p class="text-balance">
+              ¡Invito cordialmente a <span class="important-span"
+                >conocer mas de mi, mi experiencia y stack</span
+              > visitando
+              <a
+                href="https://lugo-tomas-portfolio.vercel.app/"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="hover:bg-secondary-foreground hover:text-background cursor-none underline underline-offset-4 hover:no-underline transition-all"
+                data-interactive>mi porfolio!</a
+              >
+            </p>
+          </div>
+        </section>
+      </div>
+    </div>
+  </div>
+</SectionLayout>

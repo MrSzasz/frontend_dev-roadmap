@@ -1,12 +1,27 @@
 ---
-const titles = ["Note 1", "Note 2", "Note 3", "Note 4", "Note 5", "Note 6"];
+interface Props {
+  headingsFromPost: { text: string; slug: string; depth: number }[];
+}
+
+const { headingsFromPost } = Astro.props;
 ---
 
-<ul class="bg-secondary border border-accent-foreground p-4">
+<ul class="border border-accent-foreground p-4 w-fit">
   {
-    titles.map((title) => (
-      <li class="p-1 text-sm" data-interactive>
-        {title}
+    headingsFromPost.map((headingContent) => (
+      <li
+        class="p-1 text-sm hover:bg-secondary transition-colors flex"
+        data-interactive
+      >
+        <a
+          href={`#${headingContent.slug}`}
+          class:list={[
+            headingContent.depth > 2 ? "pl-4" : "pl-0",
+            "cursor-none h-full w-full",
+          ]}
+        >
+          - {headingContent.text}
+        </a>
       </li>
     ))
   }

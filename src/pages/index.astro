@@ -1,4 +1,5 @@
 ---
+import AboutMe from "@/components/containers/main/AboutMe.astro";
 import CategoriesContainer from "@/components/containers/main/CategoriesContainer.astro";
 import ContactContainer from "@/components/containers/main/ContactContainer.astro";
 import DescriptionContainer from "@/components/containers/main/DescriptionContainer.astro";
@@ -7,8 +8,9 @@ import RecentsContainer from "@/components/containers/main/RecentsContainer.astr
 import BaseLayout from "@/layouts/BaseLayout.astro";
 ---
 
-<BaseLayout title="Home">
+<BaseLayout title="Dev Roadmap">
   <HeroContainer />
+  <AboutMe />
   <DescriptionContainer />
   <RecentsContainer />
   <CategoriesContainer />

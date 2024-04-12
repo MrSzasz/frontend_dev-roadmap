@@ -1,0 +1,81 @@
+---
+import CustomCursor from "@/components/CustomCursor.astro";
+import "@fontsource/dm-mono";
+
+import "@fontsource/kanit";
+
+import "../styles/globals.css";
+---
+
+<script is:inline>
+  const getThemePreference = () => {
+    if (typeof localStorage !== "undefined" && localStorage.getItem("theme")) {
+      return localStorage.getItem("theme");
+    }
+    return window.matchMedia("(prefers-color-scheme: dark)").matches
+      ? "dark"
+      : "light";
+  };
+  const isDark = getThemePreference() === "dark";
+  document.documentElement.classList[isDark ? "add" : "remove"]("dark");
+
+  if (typeof localStorage !== "undefined") {
+    const observer = new MutationObserver(() => {
+      const isDark = document.documentElement.classList.contains("dark");
+      localStorage.setItem("theme", isDark ? "dark" : "light");
+    });
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ["class"],
+    });
+  }
+</script>
+
+<script>
+  import Lenis from "@studio-freight/lenis";
+
+  const lenis = new Lenis({
+    lerp: 0.07,
+    wheelMultiplier: 1,
+  });
+
+  function raf(time: number) {
+    lenis.raf(time);
+    requestAnimationFrame(raf);
+  }
+
+  requestAnimationFrame(raf);
+</script>
+
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" href="/favicon.ico" />
+    <meta name="viewport" content="width=device-width" />
+    <meta name="generator" content={Astro.generator} />
+    <title>Page Not Found</title>
+  </head>
+  <body class="cursor-none">
+    <div
+      class="flex flex-col justify-center items-center h-screen w-screen gap-4"
+    >
+      <div class="flex flex-col gap-4 justify-center items-center">
+        <img
+          src="/404/jim.gif"
+          alt="Jim from The Office looking at the screen"
+          width="50%"
+        />
+        <span class="text-sm md:text-base text-center w-4/5 md:w-full"
+          >I think you're lost, or something went wrong, just sit back and relax</span
+        >
+      </div>
+      <a
+        href="/"
+        rel="noreferrer noopener nofollow"
+        class="text-lg md:text-2xl cursor-none hover:bg-accent px-2 transition-all mt-2"
+        data-interactive="true">Go to the homepage</a
+      >
+    </div>
+    <CustomCursor />
+  </body>
+</html>

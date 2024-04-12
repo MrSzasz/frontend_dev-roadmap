@@ -1,22 +1,60 @@
 ---
 import { Badge } from "@/components/ui/badge";
+import CustomBreadcrumbs from "@/components/CustomBreadcrumbs";
+import type { MarkdownInstance } from "astro";
+import { dateFormatter } from "@/lib/formatters";
+interface Props {
+  post: MarkdownInstance<Frontmatter>;
+}
+
+const { post } = Astro.props;
 ---
 
-<section class="w-full h-screen grid place-items-center">
+<section class="w-full md:min-h-screen grid place-items-center gap-4 py-4">
+  <CustomBreadcrumbs
+    tags={post.frontmatter.tags}
+    title={post.frontmatter.title}
+    client:load
+  />
+
   <div
-    class="w-[90vw] h-[50vh] md:w-[80vw] md:h-[80vh] border-accent-foreground/50 border-opacity-25 border rounded-2xl bg-[url('https://loremflickr.com/1920/1080')] bg-cover bg-center bg-no-repeat relative overflow-hidden"
+    class="w-[90vw] h-[50vh] md:w-[80vw] md:h-[80vh] border-accent-foreground/50 border-opacity-25 border rounded-2xl relative bg-center bg-cover bg-no-repeat md:bg-fixed bg-[url('/bg/mesh.png')] overflow-hidden"
     id="hero"
   >
     <div
-      class="flex gap-2 absolute bottom-0 left-0 p-4 h-fit w-full backdrop-blur-lg bg-black/50"
+      style={{ backgroundColor: post.frontmatter.color }}
+      class="absolute top-0 left-0 w-full h-full backdrop-blur-sm mix-blend-multiply before:absolute before:top-0 before:left-0 before:w-full before:h-full before:bg-[url('/bg/noise.svg')] before:bg-cover before:opacity-50 before:content-['']"
     >
-      {
-        [...Array(5).keys()].map((key) => (
-          <Badge data-interactive variant="outline">
-            Badge {key}
-          </Badge>
-        ))
-      }
+    </div>
+    <div
+      class="absolute right-1/2 top-1/2 translate-x-1/2 -translate-y-1/2 h-full w-full flex flex-col justify-center items-center"
+    >
+      <img
+        src={post.frontmatter.icon}
+        class="absolute scale-50 h-full noteTitle uppercase text-background drop-shadow-2xl"
+      />
+    </div>
+    <div
+      class="flex absolute bottom-0 left-0 p-4 h-fit w-full backdrop-blur-lg bg-black/50 justify-between items-center gap-4"
+    >
+      <div class="flex gap-2 overflow-x-auto">
+        {
+          post.frontmatter.tags.map((name) => (
+            <a href={`/notes/${name}`} class="cursor-none">
+              <Badge
+                className="hover:bg-secondary transition-colors text-white"
+                data-interactive
+                variant="outline"
+              >
+                {name}
+              </Badge>
+            </a>
+          ))
+        }
+      </div>
+      <small class="font-semibold tracking-wide text-white"
+        >{dateFormatter(String(post.frontmatter.date))}</small
+      >
     </div>
   </div>
 </section>

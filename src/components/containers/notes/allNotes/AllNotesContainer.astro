@@ -1,0 +1,26 @@
+---
+import CustomBreadcrumbs from "@/components/CustomBreadcrumbs";
+import Card from "@/components/Main/Recents/Card.astro";
+
+const { posts, tag } = Astro.props;
+
+const doesTagExist = typeof tag === "string";
+---
+
+<section class="w-full min-h-screen grid place-items-center py-6">
+  <CustomBreadcrumbs
+    title={!doesTagExist ? "Notas" : undefined}
+    tags={doesTagExist ? ["notas"] : undefined}
+    client:load
+  />
+  <h1 class="text-4xl md:text-6xl text-center py-4 uppercase">
+    {tag ?? "Notas"}
+  </h1>
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-4 container py-6 px-[10%]">
+    {
+      posts.map((post: { frontmatter: any }) => (
+        <Card post={post.frontmatter} />
+      ))
+    }
+  </div>
+</section>

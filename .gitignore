@@ -28,7 +28,12 @@ notes.txt
 
 # hidden
 hidden
+*.hidden
 
 # backup
 *.backup
 *.backup.*
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/

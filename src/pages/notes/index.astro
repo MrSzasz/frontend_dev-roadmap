@@ -1,10 +1,10 @@
 ---
-import MainNoteContainer from "@/components/containers/notes/MainNoteContainer.astro";
-import HeroContainer from "@/components/containers/notes/NotesHeroContainer.astro";
+import AllNotesContainer from "@/components/containers/notes/allNotes/AllNotesContainer.astro";
 import BaseLayout from "@/layouts/BaseLayout.astro";
+
+const posts = await Astro.glob<Frontmatter>("../../content/notes/*.md");
 ---
 
 <BaseLayout title="Notes">
-  <HeroContainer />
-  <MainNoteContainer />
+  <AllNotesContainer posts={posts} />
 </BaseLayout>

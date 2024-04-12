@@ -1,0 +1,28 @@
+---
+import SharePost from "@/components/Notes/SharePost";
+import Card from "@/components/Main/Recents/Card.astro";
+
+const { relatedPosts, url } = Astro.props;
+---
+
+<section
+  class="flex gap-8 container py-4 flex-col md:flex-row w-full justify-center border-t-accent-foreground/50 border-t"
+>
+  <div>
+    <h4 class="pb-4 text-xl">Compartir</h4>
+    <SharePost pageUrl={url} client:load />
+  </div>
+
+  {
+    relatedPosts.length > 0 ? (
+      <div>
+        <h4 class="pb-4 text-xl">Posts relacionados</h4>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 w-full">
+          {relatedPosts.map((post: { frontmatter: Frontmatter }) => (
+            <Card post={post.frontmatter} />
+          ))}
+        </div>
+      </div>
+    ) : null
+  }
+</section>

@@ -1,0 +1,45 @@
+---
+import type {
+  InferGetStaticParamsType,
+  GetStaticPaths,
+  MarkdownInstance,
+} from "astro";
+import AllNotesContainer from "@/components/containers/notes/allNotes/AllNotesContainer.astro";
+import BaseLayout from "@/layouts/BaseLayout.astro";
+
+export const getStaticPaths = (async () => {
+  const allPosts: MarkdownInstance<Frontmatter>[] =
+    await Astro.glob<Frontmatter>("@/content/notes/*.md");
+
+  const uniqueTags: string[] = [
+    ...new Set(
+      allPosts
+        .map(
+          (post: { frontmatter: { tags: string[] } }) => post.frontmatter.tags
+        )
+        .flat()
+    ),
+  ];
+
+  return uniqueTags.map((tag) => {
+    const filteredPosts = allPosts.filter((post) =>
+      post.frontmatter.tags.includes(tag)
+    );
+    return {
+      params: { tag },
+      props: { posts: filteredPosts },
+    };
+  });
+}) satisfies GetStaticPaths;
+
+type Params = InferGetStaticParamsType<typeof getStaticPaths>;
+
+const { tag } = Astro.params as Params;
+const { posts } = Astro.props;
+---
+
+<BaseLayout
+  title={tag ? `Notas - ${tag.replace("-", " ").toUpperCase()}` : "Notas"}
+>
+  <AllNotesContainer posts={posts} tag={tag} k />
+</BaseLayout>

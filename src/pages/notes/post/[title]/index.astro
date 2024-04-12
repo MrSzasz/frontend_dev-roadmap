@@ -1,0 +1,52 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import NotesHeroContainer from "@/components/containers/notes/NotesHeroContainer.astro";
+import NoteContentMD from "@/components/containers/notes/oneNote/NoteContentMD.astro";
+import MoreContent from "@/components/Notes/MoreContent.astro";
+import type { MarkdownInstance } from "astro";
+
+export async function getStaticPaths() {
+  const allPosts: MarkdownInstance<Frontmatter>[] =
+    await Astro.glob<Frontmatter>("@/content/notes/*.md");
+
+  const titles = allPosts.map((post) => post.frontmatter.title);
+
+  return titles.map((title) => {
+    return {
+      params: { title: title.replaceAll(" ", "-").toLowerCase() },
+      props: { posts: allPosts },
+    };
+  });
+}
+
+const { title } = Astro.params;
+const { posts } = Astro.props;
+const { url } = Astro.request;
+
+const post = posts.find(
+  (post) => post.frontmatter.title.replace(" ", "-").toLowerCase() === title
+);
+
+const relatedPosts: MarkdownInstance<Frontmatter>[] = [];
+
+post?.frontmatter.tags.forEach((tag) => {
+  posts.forEach((postFromList) => {
+    if (postFromList.frontmatter.tags.includes(tag)) {
+      if (!relatedPosts.includes(postFromList)) {
+        if (relatedPosts.length < 3) {
+          relatedPosts.push(postFromList);
+        }
+      }
+    }
+  });
+});
+
+const headings = post?.getHeadings().filter((heading) => heading.depth > 1);
+---
+
+<BaseLayout title={post?.frontmatter.title}>
+  <NotesHeroContainer post={post as MarkdownInstance<Frontmatter>} />
+
+  <NoteContentMD post={post} headings={headings} />
+  <MoreContent relatedPosts={relatedPosts} url={url} />
+</BaseLayout>
