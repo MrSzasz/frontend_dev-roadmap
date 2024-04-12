@@ -7,8 +7,6 @@ icon: "/icons/html.svg"
 color: "#FC4F13"
 ---
 
-<!-- TODO => fix all this data -->
-
 Este lenguaje se utiliza con base en nodos y parents, con sus respectivas etiquetas (`<etq>contenido</etq>`), las cuales indican el tipo de contenido y contexto que tendrán en el código.
 Normalmente el primer archivo que se crea para un proyecto con HTML es el archivo llamado `index.html`, el cual contiene el código principal para que este funcione.
 
