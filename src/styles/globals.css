@@ -107,8 +107,8 @@ html {
   scrollbar-gutter: stable;
 }
 html::selection {
-  background: white;
-  color: #070707;
+  background: var(--secondary);
+  color: var(--secondary-foreground);
 }
 
 body {

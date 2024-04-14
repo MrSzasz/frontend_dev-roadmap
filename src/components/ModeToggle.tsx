@@ -5,7 +5,7 @@ import { SunIcon, MoonIcon } from "@radix-ui/react-icons";
 
 export function ModeToggle() {
   const [theme, setThemeState] = useState<"theme-light" | "dark">(
-    "theme-light"
+    "theme-light",
   );
 
   useEffect(() => {
@@ -19,9 +19,13 @@ export function ModeToggle() {
   }, [theme]);
 
   return (
-    <div className="flex items-center gap-2 cursor-none">
+    <div className="flex cursor-none items-center gap-2">
       <Label htmlFor="toggle" className="cursor-none">
-        {theme === "theme-light" ? <SunIcon /> : <MoonIcon />}
+        {theme === "theme-light" ? (
+          <SunIcon name="Light Mode" />
+        ) : (
+          <MoonIcon name="Dark Mode" />
+        )}
       </Label>
       <Switch
         name="toggle"
