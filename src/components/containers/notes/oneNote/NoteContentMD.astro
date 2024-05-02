@@ -5,6 +5,54 @@ import GoToTop from "@/components/Notes/GoToTop";
 const { post, headings } = Astro.props;
 ---
 
+<script>
+  let blocks = document.querySelectorAll("pre");
+
+  const ICONS = {
+    copy: '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-copy"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>',
+    success:
+      '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-check"><path d="M20 6 9 17l-5-5"/></svg>',
+  };
+
+  blocks.forEach((block) => {
+    block.classList.add("relative");
+    let button = document.createElement("button");
+    button.innerHTML = ICONS.copy;
+    button.title = "Copy code";
+    button.setAttribute("data-interactive", "");
+    button.classList.add(
+      "cursor-none",
+      "transition-colors",
+      "absolute",
+      "top-2",
+      "right-2",
+      "bg-accent",
+      "text-accent-foreground",
+      "rounded",
+      "p-1",
+      "hover:bg-accent-foreground/80",
+      "hover:text-accent/80"
+    );
+
+    block.appendChild(button);
+
+    button.addEventListener("click", async () => {
+      let code = block.querySelector("code");
+      if (!code) return;
+      let text = code.innerText;
+      button.innerHTML = ICONS.success;
+      button.classList.add("bg-green-300", "text-slate-900");
+
+      setTimeout(() => {
+        button.innerHTML = ICONS.copy;
+        button.classList.remove("bg-green-300", "text-slate-900");
+      }, 2000);
+
+      await navigator.clipboard.writeText(text);
+    });
+  });
+</script>
+
 <section
   class="h-fit md:min-h-[50vh] md:h-fit flex flex-col gap-4 text-accent-foreground md:px-[10%] relative px-[5%]"
 >
