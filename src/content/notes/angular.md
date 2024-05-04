@@ -1359,7 +1359,7 @@ Angular tiene dos formas para manejar los formularios, la forma basada en templa
 
 ### Formularios template-driven
 
-Esta forma de manejar los formularios se basa en crear un HTML en el que se manejen los datos y el submit de la misma. Es una forma más cerca de los formularios clasicos de HTML, por lo que es mas intuitiva en cuanto a su aplicación. Para comenzar con este debemos importar `FormsModule` en el archivo principal de Angular (`app.module.ts`) de la siguiente manera.
+Esta forma de manejar los formularios se basa en crear un HTML en el que se manejen los datos y el submit de la misma. Es una forma más cerca de los formularios clásicos de HTML, por lo que es mas intuitiva en cuanto a su aplicación. Para comenzar con este debemos importar `FormsModule` en el archivo principal de Angular (`app.module.ts`) de la siguiente manera.
 
 ```ts
 import { NgModule } from "@angular/core";
@@ -1512,7 +1512,7 @@ Hecho esto podemos modificar nuestro archivo ts para generar el formulario con s
 
 ```ts
 import { Component } from "@angular/core";
-import { FormBuilder, FormGroup, Validators } from "@angular/forms"; // Importamos los modulos necesarios para manejar el formulario
+import { FormBuilder, FormGroup, Validators } from "@angular/forms"; // Importamos los módulos necesarios para manejar el formulario
 
 @Component({
   selector: "app-contact",
@@ -1629,7 +1629,7 @@ Y luego debemos editar nuestro HTML con los controladores y los errores de la si
 </div>
 ```
 
-Hay veces que queremos indicar un valor por defecto que viene desde una base de datos o deasde otro archivo, esto se puede hacer gracias a la propiedad `patchValue` del formulario de la siguiente manera.
+Hay veces que queremos indicar un valor por defecto que viene desde una base de datos o desde otro archivo, esto se puede hacer gracias a la propiedad `patchValue` del formulario de la siguiente manera.
 
 ```ts
 import { Component, OnInit } from "@angular/core"; // Importamos el módulo OnInit
@@ -1677,7 +1677,7 @@ export class ContactComponent implements OnInit {
 }
 ```
 
-> Tambien es posible utilizar `this.contactForm.get('email')?.setValue(this.userDataFromDB.email)` para cambiar el valor del input.
+> También es posible utilizar `this.contactForm.get('email')?.setValue(this.userDataFromDB.email)` para cambiar el valor del input.
 
 Y por ultimo podemos suscribirnos a un input para ver los cambios en el mismo. Esto será importante cuando debamos cambiar algo de un componente a medida que el valor del mismo cambie.
 
@@ -1740,7 +1740,7 @@ Este es el primer ciclo de vida, cuando el componente se renderiza, siendo este 
 
 ### OnDestroy
 
-Es el ultimo ciclo de vida del componente, que se activa cuando el mismo se destruye. Para probar esto podemos utilizarlo en el componente de contacto como veniamos haciendo anteriormente de la siguiente manera.
+Es el ultimo ciclo de vida del componente, que se activa cuando el mismo se destruye. Para probar esto podemos utilizarlo en el componente de contacto como veníamos haciendo anteriormente de la siguiente manera.
 
 ```ts
 import { Component, OnDestroy, OnInit } from "@angular/core"; // Importamos desde el core de Angular
@@ -1800,63 +1800,852 @@ Para probar esto debemos ir de una página a otra y ver como la consola imprime 
 
 ### NgOnChanges
 
-Es el ciclo de vida que se activa cuando un componente @Input cambia. Para probar esto podemos crear un componente dentre de la ruta del contacto de la siguinte manera.
+Es el ciclo de vida que se activa cuando un componente @Input cambia. Para probar esto podemos modificar nuestro componente de contacto de la siguiente manera.
+
+```ts
+import { Component, OnDestroy, OnInit } from "@angular/core";
+import { FormBuilder, FormGroup, Validators } from "@angular/forms";
+
+@Component({
+  selector: "app-contact",
+  templateUrl: "./contact.component.html",
+  styleUrls: ["./contact.component.css"],
+})
+export class ContactComponent implements OnInit, OnDestroy {
+  contactForm: FormGroup;
+  userRegion: string = ""; // Guardamos la región del usuario
+  userDataFromDB = {
+    email: "IiG7a@example.com",
+  };
+
+  constructor(private form: FormBuilder) {
+    this.contactForm = this.form.group({
+      name: ["", Validators.required],
+      email: ["", [Validators.email, Validators.required]],
+      message: ["", Validators.required],
+      region: ["", Validators.required],
+      city: ["", Validators.required],
+    });
+  }
+
+  handleSubmit() {
+    console.log(this.contactForm.value);
+  }
+
+  hasError(controlName: string, errorName: string) {
+    return (
+      this.contactForm.get(controlName)?.hasError(errorName) &&
+      this.contactForm.get(controlName)?.touched
+    );
+  }
+
+  ngOnInit(): void {
+    this.contactForm.patchValue({
+      email: this.userDataFromDB.email,
+    });
+
+    this.contactForm.get("email")?.disable();
+
+    this.contactForm.valueChanges.subscribe((value) => {
+      this.userRegion = value.region; // Actualizamos la región
+    });
+  }
+
+  ngOnDestroy(): void {
+    console.log("component destroyed");
+  }
+}
+```
+
+Y su respectivo HTML.
+
+```html
+<div class="container mx-auto mt-20 max-w-md">
+  <form
+    class="form form-gap"
+    [formGroup]="contactForm"
+    (ngSubmit)="handleSubmit()"
+  >
+    <div class="form-control w-full max-w-xs">
+      <label class="label">
+        <span class="label-text">Name</span>
+      </label>
+      <input
+        type="text"
+        name="name"
+        id="name"
+        formControlName="name"
+        class="input input-bordered"
+        placeholder="Name"
+        [ngClass]="{ 'input-error': hasError('name', 'required') }"
+        required
+      />
+      <small class="text-red-400" *ngIf="hasError('name', 'required')"
+        >The name is required</small
+      >
+    </div>
+
+    <div class="form-control mt-4 w-full max-w-xs">
+      <label class="label">
+        <span class="label-text">Email</span>
+      </label>
+      <input
+        type="email"
+        name="email"
+        id="email"
+        formControlName="email"
+        placeholder="Email"
+        class="input input-bordered"
+        [ngClass]="{
+          'input-error':
+            hasError('email', 'required') || hasError('email', 'email')
+        }"
+        required
+      />
+      <small class="text-red-400" *ngIf="hasError('email', 'required')"
+        >The email is required</small
+      >
+      <small class="text-red-400" *ngIf="hasError('email', 'email')"
+        >The email is invalid</small
+      >
+    </div>
+
+    <div class="form-control mt-4 w-full max-w-xs">
+      <label class="label">
+        <span class="label-text">Message</span>
+      </label>
+      <textarea
+        name="message"
+        id="message"
+        formControlName="message"
+        placeholder="Message"
+        class="textarea textarea-bordered h-24"
+        [ngClass]="{ 'textarea-error': hasError('message', 'required') }"
+        required
+      ></textarea>
+      <small class="text-red-400" *ngIf="hasError('message', 'required')"
+        >The message is required</small
+      >
+    </div>
+    <div class="form-control mt-4 w-full max-w-xs">
+      <label class="label">
+        <span class="label-text">Region</span>
+      </label>
+      <select
+        class="select select-bordered w-full max-w-xs"
+        name="region"
+        id="region"
+        formControlName="region"
+        placeholder="Region"
+        [ngClass]="{ 'select-error': hasError('region', 'required') }"
+        required
+      >
+        <option value="north">North</option>
+        <option value="west">West</option>
+        <option value="east">East</option>
+        <option value="south">South</option>
+      </select>
+      <small class="text-red-400" *ngIf="hasError('region', 'required')"
+        >The region is required</small
+      >
+    </div>
+    <div class="form-control mt-4 w-full max-w-xs">
+      <label class="label">
+        <span class="label-text">City ({{ userRegion[0] | uppercase }})</span>
+      </label>
+      <input
+        type="text"
+        name="city"
+        id="city"
+        formControlName="city"
+        placeholder="City"
+        class="input input-bordered"
+        [ngClass]="{
+          'input-error': hasError('city', 'required')
+        }"
+        required
+      />
+      <small class="text-red-400" *ngIf="hasError('city', 'required')"
+        >The city is required</small
+      >
+    </div>
+    <div class="mt-4">
+      <button class="btn btn-primary" type="submit">Send</button>
+    </div>
+  </form>
+</div>
+```
+
+Para probar esto podemos crear un componente dentro de la ruta del contacto de la siguiente manera.
 
 ```bash
 ng g c contact/input
 ```
 
-En este crearemos un input de tipo toggle el cual usaremos para ver los cambios. Empezamos modificando el archivo `contact/input.component.ts` de la siguiente manera.
+En este crearemos migraremos el input anterior junto a su funcionamiento de la siguiente manera.
 
 ```ts
+import { Component, Input, OnChanges, SimpleChanges } from "@angular/core"; // Importamos desde el core
+import { FormBuilder, FormGroup, Validators } from "@angular/forms"; // Y los handlers del formulario
 
+@Component({
+  selector: "city-input",
+  templateUrl: "./input.component.html",
+  styleUrls: ["./input.component.css"],
+})
+export class InputComponent implements OnChanges {
+  @Input() selectedRegion: string = ""; // Creamos el valor para la region
+
+  selectFormForm: FormGroup; // El formulario
+
+  constructor(private form: FormBuilder) {
+    // Con su constructor
+    this.selectFormForm = this.form.group({
+      city: ["", Validators.required],
+    });
+  }
+
+  hasError(controlName: string, errorName: string) {
+    return (
+      this.selectFormForm.get(controlName)?.hasError(errorName) &&
+      this.selectFormForm.get(controlName)?.touched
+    );
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    console.log(changes["selectedRegion"].currentValue); // E imprimimos el valor de la region cada vez que cambia
+  }
+}
 ```
 
-Y en el HTML crearemos el toggle de la siguiente manera.
+Y en el HTML crearemos el select de la siguiente manera.
 
 ```html
-
+<form [formGroup]="selectFormForm">
+  <!-- Indicamos el grupo del formulario -->
+  <div class="form-control mt-4 w-full max-w-xs">
+    <label class="label">
+      <span class="label-text">City ({{ selectedRegion[0] | uppercase }})</span>
+      <!-- Indicamos el texto de la etiqueta -->
+    </label>
+    <input
+      type="text"
+      name="city"
+      id="city"
+      formControlName="city"
+      placeholder="City"
+      class="input input-bordered"
+      [ngClass]="{
+        'input-error': hasError('city', 'required')
+      }"
+      required
+    />
+    <small class="text-red-400" *ngIf="hasError('city', 'required')"
+      >The city is required</small
+    >
+  </div>
+</form>
 ```
 
-### NgDoCheck
+### Extras
 
-Es el ciclo de vida que se activa cuando el componente se actualiza, lo cual permite realizar acciones de verificación adicionales. Hay que tener en cuenta que esta funcion es llamada cada vez que el componente se actualiza, por lo que su consumo es costoso. Es por esto que no se debe usar para funciones muy pesadas o de alto consumo, ya que puede llevar a un comportamiento inesperado de la página.
+Además de los que vimos anteriormente, hay más ciclos de vida que utilizaremos en momentos puntuales como los siguientes
 
-### NgAfterContentInit
+#### NgDoCheck
+
+Es el ciclo de vida que se activa cuando el componente se actualiza, lo cual permite realizar acciones de verificación adicionales. Hay que tener en cuenta que esta función es llamada cada vez que el componente se actualiza, por lo que su consumo es costoso. Es por esto que no se debe usar para funciones muy pesadas o de alto consumo, ya que puede llevar a un comportamiento inesperado de la página.
+
+#### NgAfterContentInit
 
 Es el ciclo de vida que se activa cuando se proyecta el contenido en el componente, lo cual puede ser de ayuda cuando se quiere comprobar si un elemento condicional se renderiza o no, ya que el mismo proyecta si el elemento es visible.
 
-### NgAfterContentChecked
+#### NgAfterContentChecked
 
-Es el ciclo que se activa despues de verificar un contenido en el componente (similar al [NgAfterContentInit](#ngaftercontentinit), con la diferencia que este se activa cada vez que el contenido se actualiza).
+Es el ciclo que se activa después de verificar un contenido en el componente (similar al [NgAfterContentInit](#ngaftercontentinit), con la diferencia que este se activa cada vez que el contenido se actualiza).
 
-### NgAfterViewInit
+#### NgAfterViewInit
 
 Es el ciclo de vida que se activa cuando se renderiza la vista del componente, es decir, el HTML del mismo. Al mostrarse solamente cuando se renderiza el HTML, se mostrará una sola vez.
 
-### NgAfterViewChecked
+#### NgAfterViewChecked
 
-Es el ciclo que se activa despues de verificar la vista renderizada, al igual que el [NgAfterContentChecked](#ngaftercontentchecked), este se renderiza cada vez que el HTML se actualiza, por lo que si no se utiliza con cuidado puede llevar a un comportamiento inesperado.
+Es el ciclo que se activa después de verificar la renderización de la vista, al igual que el [NgAfterContentChecked](#ngaftercontentchecked), este se renderiza cada vez que el HTML se actualiza, por lo que si no se utiliza con cuidado puede llevar a un comportamiento inesperado.
+
+## Fetch de datos a una API
+
+Angular recomienda que para hacer una llamada a una API se utilice un servicio dedicado al mismo, en este se puede hacer todo el CRUD necesario para manejar estos, ya sea haciendo la llamada a un backend propio como haciendo la llamada a una API publica. Para este ejemplo utilizaremos el mismo para hacer una llamada a una API que nos devuelva un array de posts con [JSONPlaceholder](https://jsonplaceholder.typicode.com/). Para empezar debemos agregar al módulo (`app.module.ts`) el manejado de http de Angular.
+
+```ts
+import { NgModule } from "@angular/core";
+import { BrowserModule } from "@angular/platform-browser";
+import { ReactiveFormsModule } from "@angular/forms";
+import { HttpClientModule } from "@angular/common/http"; // Importamos el módulo
+
+import { AppRoutingModule } from "./app-routing.module";
+import { AppComponent } from "./app.component";
+import { AboutComponent } from "./about/about.component";
+import { FaqComponent } from "./faq/faq.component";
+import { BooksComponent } from "./books/books.component";
+import { ContactComponent } from "./contact/contact.component";
+import { BookDetailComponent } from "./book-detail/book-detail.component";
+import { InputComponent } from "./contact/input/input.component";
+
+@NgModule({
+  declarations: [
+    AppComponent,
+    AboutComponent,
+    FaqComponent,
+    BooksComponent,
+    ContactComponent,
+    BookDetailComponent,
+    InputComponent,
+  ],
+  imports: [
+    BrowserModule,
+    AppRoutingModule,
+    ReactiveFormsModule,
+    HttpClientModule, // Y lo agregamos a los imports
+  ],
+  providers: [],
+  bootstrap: [AppComponent],
+})
+export class AppModule {}
+```
+
+Luego crearemos toda la lógica del servicio de la siguiente manera.
+
+```ts
+import { HttpClient } from "@angular/common/http"; // Importamos el módulo para hacer la llamada HTTP
+import { Injectable } from "@angular/core";
+import { type Observable } from "rxjs"; // Y el tipo del observable de la llamada
+
+@Injectable({
+  providedIn: "root",
+})
+export class FetchingDataService {
+  private url: string = "https://jsonplaceholder.typicode.com/"; // Creamos la url base de la API
+
+  constructor(private _httpClient: HttpClient) {} // Inyectamos el HttpClient con el constructor
+
+  public getAllPosts(): Observable<PostInfo[]> {
+    // Creamos la llamada HTTP para traer todos los posts
+    return this._httpClient.get<PostInfo[]>(this.url + "posts"); // Y retornamos el observable
+  }
+
+  public getOnePost(postID: string): Observable<PostInfo> {
+    // Creamos la llamada HTTP para traer un solo post con su respectivo parámetro
+    return this._httpClient.get<PostInfo>(this.url + "posts/" + postID); // Y retornamos el observable
+  }
+}
+```
+
+Hecho esto podemos utilizarlo en nuestro componente `about.component.ts` para crear los posts de los usuarios de la siguiente manera.
+
+```ts
+import { Component, OnInit, inject } from "@angular/core";
+import { FetchingDataService } from "../services/fetching-data.service";
+
+@Component({
+  selector: "app-about",
+  templateUrl: "./about.component.html",
+  styleUrls: ["./about.component.css"],
+})
+export class AboutComponent implements OnInit {
+  posts: PostInfo[] = []; // Creamos un array para almacenar los posts
+
+  private _postsService = inject(FetchingDataService); // Inyectamos el servicio en el componente
+
+  ngOnInit(): void {
+    this._postsService.getAllPosts().subscribe({
+      // Llamamos al servicio para traer todos los posts
+      next: (data) => {
+        // Si todo sale bien
+        this.posts = data; // Guardamos los datos en el array
+      },
+      error: (err) => console.log(err), // Si hay un error lo imprimimos en consola
+    });
+  }
+}
+```
+
+Y mostrarlo en el HTML.
+
+```html
+<section class="container flex flex-wrap items-stretch gap-4 px-8 py-4">
+  <div
+    *ngFor="let post of posts"
+    class="card bg-base-100 hover:bg-base-200 w-96 border border-white/5 shadow-xl transition-colors"
+  >
+    <div class="card-body">
+      <h2 class="card-title">{{ post.title }}</h2>
+      <p>{{ post.body }}</p>
+      <div class="card-actions justify-end">
+        <a routerLink="/posts/{{ post.id }}" class="btn btn-primary"
+          >See more</a
+        >
+      </div>
+    </div>
+  </div>
+</section>
+```
+
+Además como creamos la posibilidad de pedir un solo post, podemos crear un componente que renderice este posts (posts/one-post), en el cual llamaremos al servicio con su respectivo ID de la siguiente manera.
+
+```ts
+import { Component, OnInit, inject } from "@angular/core";
+import { ActivatedRoute } from "@angular/router";
+import { FetchingDataService } from "src/app/services/fetching-data.service";
+
+@Component({
+  selector: "app-one-post-component",
+  templateUrl: "./one-post-component.component.html",
+  styleUrls: ["./one-post-component.component.css"],
+})
+export class OnePostComponentComponent implements OnInit {
+  postData?: PostInfo; // Creamos la variable para almacenar el post
+  isLoading: boolean = true; // Creamos el estado de carga de la aplicación
+  isError: Error | undefined; // Creamos el estado de error de la aplicación
+
+  constructor(
+    private _route: ActivatedRoute, // Inyectamos la ruta
+    private _fetchPost: FetchingDataService, // Inyectamos el servicio
+  ) {}
+
+  ngOnInit(): void {
+    this._route.params.subscribe({
+      // Nos suscribimos a la ruta
+      next: (params) => {
+        // Si no hay errores
+        this._fetchPost.getOnePost(params["id"]).subscribe({
+          // Nos suscribimos al servicio
+          next: (data) => {
+            // Y si tiene los datos
+            this.postData = data; // Lo guardamos en la variable
+            this.isLoading = false; // Y cambiamos el estado para que deje de cargar
+          },
+          error: (err) => {
+            // Si hay un error
+            console.log(err); // Lo imprimimos
+            this.isError = err; // Y cambiamos el estado indicando el error
+          },
+        });
+      },
+      error: (err) => {
+        console.log(err);
+        this.isError = err;
+      },
+    });
+  }
+}
+```
+
+Luego agregamos esta ruta a nuestro `app-routing.module.ts`.
+
+```ts
+import { NgModule } from "@angular/core";
+import { RouterModule, Routes } from "@angular/router";
+import { AboutComponent } from "./about/about.component";
+import { FaqComponent } from "./faq/faq.component";
+import { BooksComponent } from "./books/books.component";
+import { BookDetailComponent } from "./book-detail/book-detail.component";
+import { ContactComponent } from "./contact/contact.component";
+import { OnePostComponentComponent } from "./posts/one-post-component/one-post-component.component"; // Importamos el componente
+
+const routes: Routes = [
+  { path: "posts/:id", component: OnePostComponentComponent }, // Y creamos la ruta con el id
+  { path: "about", component: AboutComponent },
+  {
+    path: "faq",
+    component: FaqComponent,
+  },
+  {
+    path: "books",
+    component: BooksComponent,
+  },
+  {
+    path: "books/:id",
+    component: BookDetailComponent,
+  },
+  {
+    path: "contact",
+    component: ContactComponent,
+  },
+  { path: "**", redirectTo: "" },
+];
+
+@NgModule({
+  imports: [RouterModule.forRoot(routes)],
+  exports: [RouterModule],
+})
+export class AppRoutingModule {}
+```
+
+Y por ultimo lo mostraremos en el HTML.
+
+```html
+<ng-container *ngIf="isLoading">
+  <!-- Si el componente está cargando -->
+  <div class="flex h-full items-center justify-center">
+    <span class="animate-pulse">Loading...</span>
+  </div>
+</ng-container>
+
+<ng-container *ngIf="isError">
+  <!-- Si hay un error -->
+  <div class="mx-auto my-4 w-1/2">
+    <h2 class="text-3xl font-bold">Error</h2>
+    <hr />
+    <p class="pt-2">{{ isError }}</p>
+  </div>
+</ng-container>
+
+<ng-container *ngIf="!isLoading">
+  <!-- Si el componente termina de cargar -->
+  <div class="mx-auto my-4 w-1/2">
+    <h2 class="text-3xl font-bold">{{ postData?.title }}</h2>
+    <hr />
+    <p class="pt-2">{{ postData?.body }}</p>
+  </div>
+</ng-container>
+```
+
+## Angular 16
+
+Angular 16 supuso cambios en cuanto a ciertas formas de escribir el código, además de agregar nuevos elementos al código. Para ver algunos de estos crearemos una nueva aplicación de Angular 16.
+
+### Signals
+
+Los signals son las nuevas formas de manejar un estado, siendo este un estado que puede modificarse o directamente ser un estado que solo pueda ser leído. Para ver esto podemos crear un estado para manejar un contador de la siguiente manera.
+
+```ts
+import { Component, computed, signal } from '@angular/core'; // Importamos los módulos para los signals desde Angular
+
+@Component({
+  selector: 'app-root',
+  templateUrl: './app.component.html',
+  styleUrls: ['./app.component.css']
+})
+export class AppComponent {
+  counter = signal<number>(0) // Creamos el signal con su valor inicial y el tipo
+  invertedCounter = computed(() => this.counter() * -1) // Y creamos la función computada que se actualizará cada vez que se modifique el signal
+
+  increment() { // Creamos la función para aumentar el valor tomando de base el valor actual del signal
+    this.counter.update(x => x + 1) // Utilizando `Update` para ello, ya que no lo reemplaza
+  }
+
+  decrement() {
+    this.counter.update(x => x - 1) // De la misma forma utilizamos Update para decrementar el valor
+  }
+
+  reset() { // Y creamos la función para hacer un reset del valor
+    this.counter.set(0) // Utilizando `set` para ello, ya que lo reemplazamos por completo
+  }
+}
+```
+
+Y luego creamos el HTML para mostrar los cambios en tiempo real.
+
+```html
+<h1>Angular 16</h1>
+
+<section>
+  <h2>Signals</h2>
+
+  <button (click)="decrement()">-</button>
+  <span>{{ counter() }}</span> <!-- Mostramos el valor del signal como return de una función -->
+  <button (click)="increment()">+</button>
+  <button (click)="reset()">reset</button>
+
+  <p>Inverted value: {{ invertedCounter() }}</p>
+</section>
+
+<router-outlet></router-outlet>
+```
+
+Además de esto podemos tener un array o un objeto dentro de un signal, estos también tienen sus métodos puntuales para modificarse (`mutate`), siendo los mismos de la siguiente manera.
+
+```ts
+import { Component, computed, signal } from '@angular/core';
+
+@Component({
+  selector: 'app-root',
+  templateUrl: './app.component.html',
+  styleUrls: ['./app.component.css']
+})
+export class AppComponent {
+  counter = signal<number>(0)
+  invertedCounter = computed(() => this.counter() * -1)
+  users = signal([{
+    id: 1,
+    name: 'John Doe',
+    age: 30,
+  },
+  {
+    id: 2,
+    name: 'Jane Doe',
+    age: 25,
+  },
+  {
+    id: 3,
+    name: "Kate Hill",
+    age: 28,
+  }
+  ]) // Creamos el signal con un array de objetos, que contiene id, name y age
+
+  increment() {
+    this.counter.update(x => x + 1)
+  }
+
+  decrement() {
+    this.counter.update(x => x - 1)
+  }
+
+  reset() {
+    this.counter.set(0)
+  }
+
+  changeUser() { // Y creamos la función para cambiar el nombre
+    this.users.mutate(user => { // Utilizando el `mutate` con el valor que vamos a cambiar
+      user[0].name = 'John Smith'
+    })
+  }
+}
+```
+
+### Effect
+
+De la misma forma que tenemos los signals podemos tener un effect, el cual funciona similar a un `useEffect` en React. En este caso un effect lo que nos ayuda es a crear una función que se ejecuta cuando el valor del signal que estemos viendo cambie. Para probar esto podemos tomar de base el valor anterior del contador y crear un log en consola cada vez que cambie el valor de la siguiente manera.
+
+```ts
+import { Component, computed, effect, signal } from '@angular/core'; // Importamos el módulo para los effects
+
+@Component({
+  selector: 'app-root',
+  templateUrl: './app.component.html',
+  styleUrls: ['./app.component.css']
+})
+export class AppComponent {
+  counter = signal<number>(0)
+  invertedCounter = computed(() => this.counter() * -1)
+  increment() {
+    this.counter.update(x => x + 1)
+  }
+
+  decrement() {
+    this.counter.update(x => x - 1)
+  }
+
+  reset() {
+    this.counter.set(0)
+  }
+
+  constructor() {
+    effect(() => console.log(`current count value: ${this.counter()}`)) // Y creamos el effect dentro del constructor, este se iniciará al menos una vez al crearse el componente
+  }
+}
+```
+
+### Standalone Components
+
+Un cambio importante en Angular es la nueva directiva de crear componentes que no dependen de un módulo de Angular principal, sino que son independientes. Esto es un approaching que se toma en otros frameworks y librerías, yendo más por el lado de que cada componente sea independiente de la aplicación en si. Para lograr esto hay que agregar la directiva `standalone: true` al componente e importar todo lo que vayamos a utilizar (como por ejemplo `ngFor`) en la directiva `imports: []` del mismo componente. Aun así, este se tiene que agregar al import del módulo principal de la aplicación.
+
+### Nueva Injection
+
+A diferencia de las anteriores inyecciones de Angular (incluidas en el constructor), las nuevas inyecciones se realizan a traves del `injection` que podemos importar desde Angular, sin necesidad de tener que utilizarlo dentro del constructor.
+
+```ts
+import { Component, computed, effect, inject, signal } from '@angular/core'; // Importamos el inject
+
+@Component({
+  selector: 'app-root',
+  templateUrl: './app.component.html',
+  styleUrls: ['./app.component.css']
+})
+export class AppComponent {
+  counter = signal<number>(0)
+  invertedCounter = computed(() => this.counter() * -1)
+  increment() {
+    this.counter.update(x => x + 1)
+  }
+
+  decrement() {
+    this.counter.update(x => x - 1)
+  }
+
+  reset() {
+    this.counter.set(0)
+  }
+
+  private _injected = inject(service) // Creamos el valor de la inyección, y le pasamos el servicio como parámetro
+
+  constructor() {
+    effect(() => console.log(`current count value: ${this.counter()}`))
+  }
+
+}
+```
 
 ## Angular 17
 
 A la fecha la ultima versión estable de Angular es la versión 17, la misma tiene varios cambios a comparación de la version anterior, por lo que empezaremos actualizando nuestro CLI con el siguiente comando.
 
-<!-- ***************************************************************************** -->
-<!-- ***************************************************************************** -->
-<!-- ***************************************************************************** -->
-<!-- ***************************************************************************** -->
-<!-- ***************************************************************************** -->
-<!-- ****************     ALL THE ANGULAR 17 CODE + NPM UPDATE     *************** -->
-<!-- ***************************************************************************** -->
-<!-- ***************************************************************************** -->
-<!-- ***************************************************************************** -->
-<!-- ***************************************************************************** -->
-<!-- ***************************************************************************** -->
+```bash
+npm install -g @angular/cli 
+```
 
-## Defer
+Luego de esto debemos crear un nuevo proyecto, ya que la estructura de archivos es diferente a las versiones anteriores.
 
-Uno de los beneficios que ofrece Angular a la hora de cargar componentes es el `@defer`, el cual nos ayuda a cargar componentes de manera controlada, ya sea al final de la carga total de la página o solamente cuando el mismo esté en pantalla. Para probar esto podemos crear un componente llamado `big-chunk` de la siguiente manera.
+### Estructuras de flujo (NgIf - NgFor - NgSwitch)
+
+La estructura para crear porciones de código dinámico es diferente, para ello podemos crear los datos para mostrar en el componente de la siguiente manera.
+
+```ts
+import { Component } from '@angular/core';
+import { RouterOutlet } from '@angular/router';
+
+@Component({
+  selector: 'app-root',
+  standalone: true,
+  imports: [RouterOutlet],
+  templateUrl: './app.component.html',
+  styleUrl: './app.component.css'
+})
+export class AppComponent {
+  users = [
+    {
+      id: 1,
+      name: 'Tom',
+      age: 18,
+      technologies: ['js', 'ts'],
+      status: "active"
+    },
+    {
+      id: 2,
+      name: 'Jack',
+      age: 19,
+      technologies: ['js', 'ts', 'angular'],
+      status: "inactive"
+    },
+    {
+      id: 3,
+      name: 'John',
+      age: 17,
+      technologies: ['js', 'ts', 'angular', 'react'],
+      status: "inactive"
+    },
+    {
+      id: 4,
+      name: 'Jane',
+      age: 21,
+      technologies: ['js', 'ts', 'angular', 'react'],
+      status: "n/a"
+    },
+    {
+      id: 5,
+      name: 'Kate',
+      age: 25,
+      technologies: ['js', 'react',],
+      status: "active"
+    }
+  ]
+}
+```
+
+> Como podemos ver, el componente comienza siendo `standalone` desde su creación.
+
+Y luego aprovechar estos mismos para crear la vista de la siguiente manera.
+
+```html
+<div class="container">
+
+  @for (user of users; track user.id) { <!-- Recorremos el array de usuarios utilizando el id como track -->
+  <div class="userCard">
+    <div>
+      <h2>{{user.name}}</h2>
+      @switch (user.status) { <!-- Utilizamos un switch para mostrar el estado del usuario con su respectiva clase -->
+      @case ('active') {
+      <small class="active">active</small>
+      }
+      @case ('inactive') {
+      <small class="inactive">inactive</small>
+      }
+      @default {
+      <small class="status">n/a</small>
+      }
+      }
+    </div>
+    <div>
+      <p> @if (user.age > 18) { <!-- Utilizamos un if para mostrar la edad del usuario -->
+        this user is over 18
+        }@else {
+        this user is under 18
+        }
+
+      </p>
+    </div>
+    <div>
+      @for (tech of user.technologies; track $index) { <!-- Recorremos el array de tecnologías utilizando el índice como track automáticamente -->
+      <code class="tech">
+          {{tech}}
+        </code>
+      }
+    </div>
+  </div>
+  }
+
+</div>
+
+
+<router-outlet />
+```
+
+Por ultimo podemos agregar los estilos para darle una mejor apariencia al componente.
+
+```css
+  .container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1em;
+  }
+
+  .userCard {
+    border: 1px solid gray;
+    padding: 1em;
+    border-radius: 0.5em;
+  }
+
+  h2 {
+    padding: 0;
+    margin: 0;
+    text-decoration: underline;
+  }
+
+  .active {
+    color: green;
+  }
+
+  .inactive {
+    color: red;
+  }
+
+  .status {
+    color: gray;
+  }
+
+  .tech {
+    display: inline-block;
+    padding: 0.5em;
+    margin: 0.5em;
+    border-radius: 0.5em;
+    background-color: lightgray;
+    color: black;
+  }
+```
+
+### Defer
+
+Uno de los beneficios que ofrece Angular 17 a la hora de cargar componentes es el `@defer`, el cual nos ayuda a cargar componentes de manera controlada, ya sea al final de la carga total de la página o solamente cuando el mismo esté en pantalla. Para probar esto podemos crear un componente llamado `big-chunk` de la siguiente manera.
 
 ```ts
 import { Component } from "@angular/core";
@@ -1885,16 +2674,6 @@ Luego modificamos el HTML del mismo.
 Y en el HTML del componente app agregamos un texto que nos permita extender la página, a la vez que importamos el mismo dentro del defer de la siguiente manera.
 
 ```html
-<h1>Hola desde {{ framework }}</h1>
-<app-user
-  app="{{framework}}"
-  (addCurrentWatchingMovieEvent)="changeCurrentWatchingMovie($event)"
-/>
-
-@if (currentWatchingMovie) {
-<h2>Viendo nuevamente: {{ currentWatchingMovie }}</h2>
-}
-
 <p>Big content o lorem1500</p>
 
 @defer (on viewport){
